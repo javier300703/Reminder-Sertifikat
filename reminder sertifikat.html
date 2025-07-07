@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Reminder Sertifikat - Pure JS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-5" id="app"></div>
+
+  <script>
+    // ===== BUAT FORM DENGAN JAVASCRIPT =====
+    const app = document.getElementById("app");
+
+    const h2 = document.createElement("h2");
+    h2.className = "mb-4";
+    h2.innerText = "📎 Form Reminder Sertifikat + WhatsApp";
+
+    const form = document.createElement("form");
+    form.id = "formReminder";
+
+    const fields = [
+      { label: "Nama Sertifikat", id: "nama", type: "text" },
+      { label: "Nama Pemilik", id: "pemilik", type: "text" },
+      { label: "Tanggal Kedaluwarsa", id: "expired", type: "date" },
+      { label: "Upload Sertifikat", id: "file", type: "file", accept: ".pdf,.jpg,.jpeg,.png" },
+      { label: "Nomor WhatsApp (misal: +628xxx)", id: "wa", type: "text" }
+    ];
+
+    fields.forEach(field => {
+      const div = document.createElement("div");
+      div.className = "mb-3";
+
+      const label = document.createElement("label");
+      label.className = "form-label";
+      label.setAttribute("for", field.id);
+      label.textContent = field.label;
+
+      const input = document.createElement("input");
+      input.className = "form-control";
+      input.id = field.id;
+      input.type = field.type;
+      input.required = true;
+      if (field.accept) input.accept = field.accept;
+
+      div.appendChild(label);
+      div.appendChild(input);
+      form.appendChild(div);
+    });
+
+    const btn = document.createElement("button");
+    btn.className = "btn btn-success";
+    btn.type = "submit";
+    btn.textContent = "Simpan";
+    form.appendChild(btn);
+
+    // Buat area hasil
+    const result = document.createElement("div");
+    result.id = "result";
+    result.className = "mt-5 d-none";
+
+    result.innerHTML = `
+      <h4>📌 Data Sertifikat:</h4>
+      <p><strong>Nama Sertifikat:</strong> <span id="rNama"></span></p>
+      <p><strong>Pemilik:</strong> <span id="rPemilik"></span></p>
+      <p><strong>Tanggal Kedaluwarsa:</strong> <span id="rExpired"></span></p>
+      <p><strong>WA:</strong> <span id="rWa"></span></p>
+      <a id="waBtn" href="#" target="_blank" class="btn btn-warning">🔔 Kirim Pengingat ke WhatsApp</a>
+    `;
+
+    app.appendChild(h2);
+    app.appendChild(form);
+    app.appendChild(result);
+
+    // ===== HANDLE FORM =====
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const nama = document.getElementById("nama").value.trim();
+      const pemilik = document.getElementById("pemilik").value.trim();
+      const expired = document.getElementById("expired").value;
+      const wa = document.getElementById("wa").value.trim();
+      const waClean = wa.replace("+", "").replace(/\s/g, "");
+
+      const message = `⚠️ Halo ${pemilik},\nSertifikat *${nama}* Anda akan kedaluwarsa pada ${expired}.`;
+      const waLink = `https://wa.me/${waClean}?text=${encodeURIComponent(message)}`;
+
+      document.getElementById("rNama").textContent = nama;
+      document.getElementById("rPemilik").textContent = pemilik;
+      document.getElementById("rExpired").textContent = expired;
+      document.getElementById("rWa").textContent = wa;
+      document.getElementById("waBtn").href = waLink;
+
+      result.classList.remove("d-none");
+
+      // Simpan sementara (opsional)
+      localStorage.setItem("lastSertifikat", JSON.stringify({ nama, pemilik, expired, wa }));
+    });
+  </script>
+</body>
+</html>
