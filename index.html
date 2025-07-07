@@ -9,7 +9,6 @@
   <div class="container py-5" id="app"></div>
 
   <script>
-    // ===== BUAT FORM DENGAN JAVASCRIPT =====
     const app = document.getElementById("app");
 
     const h2 = document.createElement("h2");
@@ -54,7 +53,6 @@
     btn.textContent = "Simpan";
     form.appendChild(btn);
 
-    // Buat area hasil
     const result = document.createElement("div");
     result.id = "result";
     result.className = "mt-5 d-none";
@@ -72,7 +70,6 @@
     app.appendChild(form);
     app.appendChild(result);
 
-    // ===== HANDLE FORM =====
     form.addEventListener("submit", function(e) {
       e.preventDefault();
 
@@ -93,8 +90,18 @@
 
       result.classList.remove("d-none");
 
-      // Simpan sementara (opsional)
+    
       localStorage.setItem("lastSertifikat", JSON.stringify({ nama, pemilik, expired, wa }));
+
+     
+      fetch("https://script.google.com/macros/s/AKfycbwoQ5t69am7bdcZJuc3KLXYejeGeEM2FbPJZtrUbOn4tF-jJRUg5BAfpTjVyB8-j4MA/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, pemilik, expired, wa })
+      })
+      .then(res => res.text())
+      .then(res => console.log("✅ Data terkirim ke spreadsheet:", res))
+      .catch(err => console.error("❌ Gagal kirim ke spreadsheet:", err));
     });
   </script>
 </body>
